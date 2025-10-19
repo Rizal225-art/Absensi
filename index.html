@@ -4,40 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Absensi Kelas - Terhubung Google Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 500px; margin: auto; background-color: #f4f4f4; color: #333; }
-        h1 { color: #007bff; text-align: center; margin-bottom: 30px; }
-        form { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        /* Variabel Warna */
+        :root {
+            --primary-red: #dc3545; /* Merah Aksen yang Jelas */
+            --primary-red-hover: #c82333; /* Merah Lebih Gelap untuk Hover */
+            --bg-light: #f7f9fc; /* Latar Belakang Sangat Cerah */
+            --text-dark: #333d47; /* Teks Gelap */
+            --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.1); /* Bayangan sedang */
+            --border-radius-lg: 10px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif; /* Ganti font */
+            padding: 20px;
+            max-width: 550px; /* Lebar lebih besar sedikit */
+            margin: auto;
+            /* Latar belakang gradient lembut untuk variasi */
+            background: linear-gradient(135deg, var(--bg-light) 0%, #e9edf1 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        h1 { 
+            color: var(--primary-red); /* Judul menggunakan warna aksen */
+            text-align: center; 
+            margin-bottom: 30px; 
+            font-weight: 700; /* Lebih tebal */
+            letter-spacing: 0.5px;
+        }
+        form { 
+            background-color: #fff; 
+            padding: 35px; /* Padding lebih besar */
+            border-radius: var(--border-radius-lg); 
+            box-shadow: var(--shadow-md); /* Bayangan lebih jelas */
+            border: 1px solid #e0e0e0; /* Border halus */
+        }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600; /* Lebih tebal */
+            color: var(--text-dark);
+            font-size: 0.95em;
+        }
         input[type="text"], select, textarea { 
             width: 100%; 
-            padding: 10px; 
-            margin-bottom: 20px; 
-            border: 1px solid #ccc; 
-            border-radius: 4px; 
+            padding: 12px; /* Padding input lebih besar */
+            margin-bottom: 25px; /* Jarak antar input lebih lebar */
+            border: 1px solid #dcdcdc; 
+            border-radius: 8px; /* Sudut lebih membulat */
             box-sizing: border-box; 
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input[type="text"]:focus, select:focus, textarea:focus {
+            border-color: var(--primary-red); /* Garis batas merah saat fokus */
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2); /* Efek glowing merah */
+            outline: none;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
         }
         button { 
-            padding: 12px 20px; 
-            background-color: #28a745; 
+            padding: 14px 20px; /* Tombol lebih besar */
+            background-color: var(--primary-red); /* Tombol Aksen Merah */
             color: white; 
             border: none; 
-            border-radius: 4px; 
+            border-radius: 8px; /* Sudut lebih membulat */
             cursor: pointer; 
             width: 100%;
-            font-size: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3); /* Bayangan tombol */
         }
-        button:hover:not(:disabled) { background-color: #218838; }
-        button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        button:hover:not(:disabled) { 
+            background-color: var(--primary-red-hover); 
+            transform: translateY(-2px); /* Efek sedikit terangkat saat hover */
+            box-shadow: 0 6px 15px rgba(220, 53, 69, 0.4);
+        }
+        button:disabled { 
+            background-color: #6c757d; 
+            cursor: not-allowed; 
+            box-shadow: none;
+            transform: none;
+        }
         #response-message { 
             padding: 15px; 
             margin-top: 20px; 
-            border-radius: 4px; 
+            border-radius: var(--border-radius-lg); 
             text-align: center;
+            font-weight: 600;
         }
-        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { 
+            background-color: #d4edda; 
+            color: #0b501d; /* Hijau lebih gelap */
+            border: 1px solid #c3e6cb; 
+        }
+        .error { 
+            background-color: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb; 
+        }
         .hidden { display: none; }
     </style>
 </head>
@@ -48,19 +121,19 @@
     <form id="attendance-form">
         
         <label for="NamaLengkap">Nama Lengkap:</label>
-        <input type="text" id="NamaLengkap" name="NamaLengkap" required>
+        <input type="text" id="NamaLengkap" name="NamaLengkap" placeholder="Masukkan nama lengkap Anda" required>
 
         <label for="StatusKehadiran">Status Kehadiran:</label>
         <select id="StatusKehadiran" name="StatusKehadiran" required>
             <option value="">Pilih Status</option>
-            <option value="Hadir">Hadir</option>
-            <option value="Sakit">Sakit</option>
-            <option value="Izin">Izin</option>
-            <option value="Alfa">Alfa</option>
+            <option value="Hadir">✅ Hadir</option>
+            <option value="Sakit">🤒 Sakit</option>
+            <option value="Izin">✍️ Izin</option>
+            <option value="Alfa">❌ Alfa</option>
         </select>
 
         <label for="Keterangan">Keterangan (Opsional):</label>
-        <textarea id="Keterangan" name="Keterangan"></textarea>
+        <textarea id="Keterangan" name="Keterangan" placeholder="Contoh: Ada keperluan mendesak..."></textarea>
 
         <button type="submit" id="submit-button">Kirim Absensi</button>
     </form>
